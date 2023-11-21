@@ -1,0 +1,41 @@
+<script>
+  $(".hidee").hide()
+  let session = null
+    function isLogin(){
+      $("#app").hide()
+      $("#app-admin").hide()
+      $(".admin").hide()
+      const tk = localStorage.getItem("token")
+      google.script.run.withSuccessHandler(
+         (res)=>{
+          $("#app").show()
+          if(res && res.uid){
+            session = res
+            session["token"] = tk
+            try{render();}catch{}
+
+            if(session.role=="admin"){
+              $(".user").hide();
+              $("#app-admin").show();
+              $(".admin").show();
+              try{renderAdmin()}catch{}
+            }
+
+            
+          }else{
+            $("#app").show()
+            $("#app").html("<p class='text-center'><a href='<?=getURL()?>/login'>pls login</a></p>")
+          }
+        }
+      ).getSession(tk)
+    }
+
+    isLogin()
+    init()
+
+</script>
+
+
+
+
+
