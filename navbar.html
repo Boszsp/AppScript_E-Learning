@@ -1,0 +1,38 @@
+<div style="height:5px;" class="" id="progressbar"></div>
+<nav class="top-bar">
+  <div class="top-bar-left">
+    <ul class="menu">
+      <li class="menu-text">Online Learning</li>
+    </ul>
+  </div>
+  <div class="top-bar-right">
+    <ul class="menu">
+      <li><a href="<?=getURL()?>" >Home</a></li>
+      <li><a href="<?=getURL()?>/courses" >Courses</a></li>
+      <li id="profiledd"><a href="#" id="profile" class="button">About Us</a></li>
+    </ul>
+    
+  </div>
+</nav>
+<script>
+  $( "#progressbar" ).progressbar({
+      value: false
+    });
+  $("#profiledd").hide()
+  function getSession(){
+      const tk = localStorage.getItem("token")
+      google.script.run.withSuccessHandler(
+        function (res){
+          $("#progressbar").remove()
+          if(res && res.uid){
+          $("#profiledd").show()
+            $("#profile").text(res.username)
+          }else{
+            $("#profiledd").remove()
+          }
+
+        }
+      ).getSession(tk)
+    }
+    getSession()
+</script>
