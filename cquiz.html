@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Course - Online Learning Platform</title>
+  <?!=include("HCDN")?>
+
+</head>
+
+<body class="bg-light" style="font-family: 'Kanit', sans-serif;">
+
+  <!-- Navbar -->
+  <?!=include("navbar")?>
+
+
+  <!-- Content Menu -->
+  <div class="grid-x grid-padding-x align-center" id="app">
+    <div class="cell small-12 medium-10">
+      <div>
+        <label>Quiz title</label>
+        <input id="title" type="text"/>
+      </div>
+      <div class="grid-x grid-padding-x align-center">
+        <span class="cell small-4">
+          <label>Rank</label>
+          <input value="0" id="rank" type="range" min="0" max="5"/>
+        </span>
+        <span class="cell small-4">
+          <label>Mode</label>
+          <input onclick="toggleMode()" class="mode" id="mode" type="radio" name="mode" value="internal" title="internal" checked /><span>internal</span>
+          <input onclick="toggleMode()" class="mode" id="mode" type="radio" name="mode" value="external" title="external" /><span>external</span>
+        </span>
+        <span class="cell small-4">
+          <label>Expire</label>
+          <input id="expire" type="datetime-local"/>
+        </span>
+      </div>
+      <div class="external hidee">
+        <label>Form URL</label>
+        <input id="externalURL" type="url"/>
+      </div>
+      <div class="internal">
+        <div id="fb-editor"></div>
+      </div>
+
+      <a href="<?=REDIRECT?>" onclick="return createQuiz()" style="margin-top:2rem;" class="expanded button primary">Save</a>
+    </div>
+  <?!=include("isLogin")?>
+  <script>
+    function toggleMode(){
+        if($("#mode:checked").val()=="internal"){
+          $(".external").hide()
+          $(".internal").show()
+        }else{
+          $(".internal").hide()
+          $(".external").show()
+        }
+    }
+    function createQuiz(){
+      //createQuiz({token,title,desc,rank,quiz,expire,setting,url})
+      google.script.run.withSuccessHandler(
+        (res)=>{
+          if(res.status == "error"){
+            console.error(res.mss)
+          }
+          $.toast({
+                  heading: res.status,
+                  text: res.mss,
+                  icon: res.status,
+                  position: 'top-center', 
+              })
+        }
+      ).createQuiz({
+        courseId:<?=ID?>,
+        token:session.token,
+        title:$("#title").val(),
+        desc:"",
+        rank:$("#rank").val(),
+        setting:{"mode":$("#mode:checked").val()},
+        expire:$("#expire").val(),
+        url:$("#externalURL").val(),
+        quiz:formBuilder.getData("json")
+        })
+
+        return true
+    }
+  </script>
+  <script>
+    let fields = [{
+        label: 'Rich Text Editor',
+        attrs: {
+          type: 'richtext'
+        },
+        icon: '🖋️'
+      }];
+      let templates = {
+        richtext: function(fieldData) {
+          return {
+            field: '<textarea class="r-editor" id="'+fieldData.name+'"></textarea>',
+            onRender: function() {
+              $('.r-editor').trumbowyg({btns:TrumbowygBtns});
+            }
+          };
+        }
+      };
+      var formBuilder
+      jQuery(function($) {
+        formBuilder = $(document.getElementById('fb-editor')).formBuilder({
+          fields:fields,
+          templates:templates,
+          disableFields: ['autocomplete', 'file', 'hidden','button','date'],
+          disabledActionButtons: ['save'],
+          typeUserAttrs: {
+            '*':{
+              score:{
+                label:"score",
+                value:0,
+                type:'Number'
+              },
+              wscore:{
+                label:"wrong score",
+                value:0,
+                type:'Number'
+              },
+            }
+          }
+        });
+      });
+  </script>
+</body>
+
+</html>
