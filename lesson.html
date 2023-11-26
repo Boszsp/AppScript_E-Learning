@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Course - Online Learning Platform</title>
+  <?!=include("HCDN")?>
+
+</head>
+
+<body class="bg-light" style="font-family: 'Kanit', sans-serif;">
+
+  <!-- Navbar -->
+  <?!=include("navbar")?>
+
+
+  <div class="grid-container" id="app">
+    <div class="grid-x grid-padding-x">
+      
+      <div class="cell small-12 medium-2">
+        <div class="menu vertical">
+          <li><a><b>Menu</b></a></li>
+          <li><a href="<?=getURL()?>/course/<?=PEV_ID?>">Home</a></li>
+          <li><a href="<?=getURL()?>/course/<?=PEV_ID?>/lessons">Lesson</a></li>
+          <li><a href="<?=getURL()?>/course/<?=PEV_ID?>/quizs">Quizz</a></li>
+          <li><a href="<?=getURL()?>/course/<?=PEV_ID?>/problems">Problem</a></li>
+          <li><a href="<?=getURL()?>/course/<?=PEV_ID?>/students">Students</a></li>
+        </div>
+      </div>
+
+      <?const course = getCouse(PEV_ID)?>
+      <div class="cell small-12 medium-10">
+        <div class="cell small-12 grid-x ">
+          <h2 class="cell small-11">Course :
+            <?=course[COURSE_NAME_INDEX]?>
+          </h2>
+          <button onclick="$('.edit').toggle()" class="cell small-1 button admin">Create Lesson</button>
+        </div>
+
+        <div class="cell small-12 medium-10 edit card hidee">
+          <div class="card-section">
+            <label>Lesson Title</label>
+            <input id="lesson_title_create" type="text" />
+            <label>Lesson Desc</label>
+            <textarea id="lesson_desc_create" class="r-editor"></textarea>
+            <a href="<?=getURL()?>/course/<?=PEV_ID?>/lessons" onclick="return ccreateLesson()" class="button expanded">Create</a>
+          </div>
+        </div>
+
+        <div class="cell small-12 medium-10">
+          <?const lessons = getAllLessons(course[COURSE_ID_INDEX])?>
+            <?if(lessons.length<1){?>
+            <p>Don't have any lesson here</p>
+            <?}?>
+          <div class="accordion">
+            <?let i=2?>
+            <?for(let lesson of lessons){?>
+            <h3>
+              <span><?=lesson[LESSON_TITLE_INDEX]?></span>
+              <span class="admin"><a href="<?=getURL()?>/course/<?=PEV_ID?>/lessons" onclick="return deleteLesson('<?=lesson[LESSON_ID_INDEX]?>',<?=i?>)" class="button tiny alert">Delete</a></span>
+              <span class="admin"><a onclick="toggleEditLessonMode('<?!=i?>')" class="lesson_edit_zone_<?!=i?> button tiny primary">Edit</a></span>
+              <span class="admin"><a onclick="return editLesson('<?=lesson[LESSON_ID_INDEX]?>',<?=i?>)" class="lesson_edit_zone_<?!=i?> button tiny success hidee" href="<?=getURL()?>/course/<?=PEV_ID?>/lessons">Save</a></span>
+            </h3>
+            <div>
+              <div id="lesson_desc_<?!=i?>" class="lesson_edit_zone_<?!=i?>">
+                <?!=lesson[LESSON_DESC_INDEX]?>
+              </div>
+              <div class="lesson_edit_zone_<?!=i?> hidee">
+                <label>Lesson title</label>
+                <input id="lesson_edit_title_<?!=i?>" value="<?=lesson[LESSON_TITLE_INDEX]?>" type="text"/>
+                <label>Lesson desc</label>
+                <textarea id="lesson_edit_desc_<?!=i?>" class="r-editor"></textarea>
+              </div>
+            </div>
+            <?i+=1?>
+            <?}?>
+          </div>
+        </div>
+      </div>
+
+      
+    </div>
+  </div>
+
+  <!-- dependencies -->
+  <?!=include("isLogin")?>
+  <script>
+
+    function ccreateLesson(){
+      //createLesson({token,courseId,title,desc})
+      google.script.run.withSuccessHandler(
+        (res)=>{
+          $("#lesson_desc_create").val(""),
+          $('#lesson_desc_create').trumbowyg('empty');
+          $.toast({
+                  heading: res.status,
+                  text: res.mss,
+                  icon: res.status,
+                  position: 'top-center', 
+              })
+        }
+      ).createLesson({
+        token:session.token,
+        courseId:"<?=course[COURSE_ID_INDEX]?>",
+        title:$("#lesson_title_create").val(),
+        desc:$("#lesson_desc_create").val()
+        })
+        
+      return true
+    }
+
+    function deleteLesson(lid,rid){
+      const confirm = prompt("Type "+lid+" for confirm delete.") == lid
+      if(confirm){
+      google.script.run.withSuccessHandler(
+        (res)=>{
+          $("#lesson_desc_create").val(""),
+          $('#lesson_desc_create').trumbowyg('empty');
+          $.toast({
+                  heading: res.status,
+                  text: res.mss,
+                  icon: res.status,
+                  position: 'top-center', 
+              })
+        }
+      ).deleteLesson({
+        token:session.token,
+        courseId:"<?=course[COURSE_ID_INDEX]?>",
+        lid:lid,
+        rid:rid
+        })
+
+      return true
+      }
+      return false
+
+    }
+
+    function toggleEditLessonMode(rid){
+      $('.lesson_edit_zone_'+rid).toggle()
+      $('#lesson_edit_desc_'+rid).trumbowyg('html',$('#lesson_desc_'+rid).html());
+    }
+
+    function editLesson(lid,rid){
+      //editLesson({token,courseId,title,desc,lid,rid})
+      
+      google.script.run.withSuccessHandler(
+        (res)=>{
+          toggleEditLessonMode(rid)
+          $.toast({
+                  heading: res.status,
+                  text: res.mss,
+                  icon: res.status,
+                  position: 'top-center', 
+              })
+        }
+      ).editLesson({
+        token:session.token,
+        courseId:"<?=course[COURSE_ID_INDEX]?>",
+        lid:lid,
+        rid:rid,
+        title:$('#lesson_edit_title_'+rid).val(),
+        desc: $('#lesson_edit_desc_'+rid).val()
+        })
+
+      return true
+
+    }
+  </script>
+
+
+</body>
+
+</html>

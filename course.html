@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Course - Online Learning Platform</title>
+  <?!=include("HCDN")?>
+
+</head>
+
+<body class="bg-light" style="font-family: 'Kanit', sans-serif;">
+
+  <!-- Navbar -->
+  <?!=include("navbar")?>
+
+
+  <!-- Content Menu -->
+  <div class="grid-container" id="app">
+    <div class="grid-x grid-padding-x">
+
+      <div class="cell small-12 medium-2">
+        <div class="menu vertical">
+          <li><a><b>Menu</b></a></li>
+          <li><a href="<?=getURL()?>/course/<?=PEV_ID?>">Home</a></li>
+          <li><a href="<?=getURL()?>/course/<?=PEV_ID?>/lessons">Lesson</a></li>
+          <li><a href="<?=getURL()?>/course/<?=PEV_ID?>/quizs">Quizz</a></li>
+          <li><a href="<?=getURL()?>/course/<?=PEV_ID?>/problems">Problem</a></li>
+          <li><a href="<?=getURL()?>/course/<?=PEV_ID?>/students">Students</a></li>
+        </div>
+      </div>
+
+      <?const course = getCouse(PEV_ID)?>
+      <div class="cell small-12 medium-10">
+        <div class="cell small-12 grid-x ">
+          <h2 class="cell small-10 edit">Course :
+            <?=course[COURSE_NAME_INDEX]?>
+          </h2>
+          <input id="course_name_edit" class="cell small-11 edit hidee" type="text" value="<?=course[COURSE_NAME_INDEX]?>"/>
+          <button onclick="$('.edit').toggle()" class="cell small-1 button admin edit">Edit</button>
+          <a href="<?=getURL()?>/course/<?=PEV_ID?>" onclick="$('.edit').toggle();return editCourse()" class="cell small-1 button edit hidee">Save</a>
+          <a href="<?=getURL()?>/courses/" onclick="return deleteCourse('<?=course[COURSE_ID_INDEX]?>',<?!=PEV_ID?>)" class="cell alert small-1 button admin edit">Delete</a>
+
+        </div>
+
+        
+        <div class="card">
+          <div class="card-section">
+            <div class="edit" id="course_enrollkey">
+              EnrollKey is "
+              <?!=course[COURSE_ENROLLKEY_INDEX]?>"
+            </div>
+            <input value="<?!=course[COURSE_ENROLLKEY_INDEX]?>" type="text" id="course_enrollkey_edit" class="edit hidee"></textarea>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-section">
+            <div class="edit" id="course_desc">
+              <?!=course[COURSE_DESC_INDEX]?>
+            </div>
+            <div class="edit hidee">
+              <textarea id="course_desc_edit" class="r-editor"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="cell small-12 medium-6">
+        <!-- Course Content will be displayed here based on the menu selection -->
+      </div>
+    </div>
+  </div>
+
+  <?!=include("isLogin")?>
+  <script>
+    $("#course_desc_edit").trumbowyg("html",`<?!=course[COURSE_DESC_INDEX]?>`)
+  </script>
+  <script>
+    function deleteCourse(cid,rid){
+      //{token,rid,courseId}
+        const confirm = prompt("please type "+cid+" for confirm")
+        if(confirm == cid)
+        google.script.run.withSuccessHandler(
+        (res)=>{
+          $.toast({
+                  heading: res.status,
+                  text: res.mss,
+                  icon: res.status,
+                  position: 'top-center', 
+              })
+        }
+      ).deleteCourse({token:session.token,rid:rid,courseId:cid})
+      
+      return true
+
+    }
+
+    function editCourse(){
+      //{token,rid,courseId,name,desc,enrollKey}
+      google.script.run.withSuccessHandler(
+        (res)=>{
+          $.toast({
+                  heading: res.status,
+                  text: res.mss,
+                  icon: res.status,
+                  position: 'top-center', 
+              })
+        }
+      ).editCourse({
+        token:session.token,
+        rid:<?!=PEV_ID?>,
+        courseId:"<?=course[COURSE_ID_INDEX]?>",
+        name:$("#course_name_edit").val(),
+        desc:$("#course_desc_edit").val(),
+        enrollKey:$("#course_enrollkey_edit").val()
+        })
+        return true
+    }
+  </script>
+</body>
+
+</html>

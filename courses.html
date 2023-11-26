@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Courses - Online Learning Platform</title>
+  <!-- Bootstrap CSS -->
+  <?!=include("HCDN")?>
+
+</head>
+
+<body class="bg-light" style="font-family: 'Kanit', sans-serif;">
+
+  <!-- Navbar -->
+  <?!=include("navbar")?>
+
+
+
+  <!-- Course List Section -->
+  <div class="grid-x grid-padding-x align-center" id="app">
+    <div class="cell small-12 medium-10">
+      <div class="grid-x">
+        <h2 class="cell small-11">Choose Your Course</h2>
+        <a href="<?=getURL()?>/ccourse" class="cell small-1 button admin">Create Course</a>
+      </div>
+      <div id="tabs" style="margin-top:1rem;">
+        <ul>
+          <li><a href="#tabs-1">My Courses</a></li>
+          <li><a href="#tabs-2">All Courses</a></li>
+        </ul>
+        <section id="tabs-1">
+          <div id="myCourses" class="grid-x grid-padding-x">
+            <!-- Course Card -->
+            <!-- Add more courses as needed -->
+          </div>
+        </section>
+        <section id="tabs-2">
+          <div class="grid-x grid-padding-x">
+            <!-- Course Card -->
+            <?let i=2?>
+            <?for(let course of getAllCouses()){?>
+            <div class="cell small-12 medium-3">
+              <div class="card">
+                <img src="https://img.guildedcdn.com/ContentMediaGenericFiles/8c635fefd6fa1f723e5aada059898ae2-Full.webp" alt="Course 3 Image">
+                <div class="card-section">
+                  <h3>
+                    <?=course[COURSE_NAME_INDEX]?>
+                  </h3>
+                  <p>
+                    ...
+                  </p>
+                  <a onclick="openDialog(<?=course[COURSE_NAME_INDEX]?>,<?=course[COURSE_ID_INDEX]?>,<?=i?>)"
+                    class="user button expanded">Enroll</a>
+                  <div class="button-group expanded">
+                    <a class="button"
+                      onclick="openDialog(<?=course[COURSE_NAME_INDEX]?>,<?=course[COURSE_ID_INDEX]?>,<?=i?>)">Enroll</a>
+                    <a class="alert button" onclick="deleteCourse(<?=course[COURSE_ID_INDEX]?>,<?=i?>)">Delete</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <?i+=1?>
+            <?}?>
+            <?if(i==2){?>
+            <p class="text-center">don't have any course here pls create course</p>
+            <?}?>
+            <!-- Add more courses as needed -->
+          </div>
+        </section>
+      </div>
+    </div>
+
+
+    <!-- Modal -->
+    <div id="dialog-form" title="Create new user">
+      <form>
+        <fieldset>
+          <label for="enrollKey">Enroll Key</label>
+          <input type="password" name="enrollKey" id="enrollKey" value="" class="text ui-widget-content ui-corner-all">
+
+          <!-- Allow form submission with keyboard without duplicating the dialog button -->
+          <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+        </fieldset>
+      </form>
+    </div>
+
+    <?!=include("isLogin")?>
+    <script>
+      $( "#tabs" ).tabs();
+      var dialog = "?"
+      dialog = $( "#dialog-form" ).dialog({
+      width: 300,
+      modal: true,
+      "buttons": {
+        "Enroll Me": enrollMe,
+        Cancel: function() {
+          dialog.dialog( "close" );
+        }
+      },
+      "close": function() {
+        $( "#enrollKey" ).val("");
+      }
+    });
+    dialog.dialog( "close" );
+    let CRId,CId
+    //enroll(courseId,courseRId,token,enrollKey)
+    function openDialog(title,id,rId){
+      CId = id; CRId =rId
+      $("#dialog-form").prop("title",title)
+      $("#dialog-form").attr("title",title)
+      $(".ui-dialog-title").text("Enroll "+title)
+      dialog.dialog( "open" );
+    }
+    function enrollMe(){
+      google.script.run.withSuccessHandler((res)=>{
+        $.toast({
+            heading: res.status,
+            text: res.mss,
+            icon: res.status,
+            position: 'top-center', 
+        })
+        dialog.dialog( "close" );
+
+      }).enroll(CId,CRId,session.token,$( "#enrollKey" ).val())
+    }
+    </script>
+    <script>
+      function render(){
+        const allCourses = <?!=JSON.stringify(getAllCouses())?>;
+
+        const COURSE_ID_INDEX = <?!=COURSE_ID_INDEX?>;
+
+        const COURSE_NAME_INDEX = <?!=COURSE_NAME_INDEX?>;
+
+        const COURSE_DESC_INDEX = <?=COURSE_DESC_INDEX?>;
+
+        let i = 2
+        allCourses.forEach(
+          (course)=>{
+            if(session.courses.includes(course[COURSE_ID_INDEX]))
+            $("#myCourses").append(
+              `
+                <div class="cell small-12 medium-3">
+                <div class="card">
+                  <img src="https://img.guildedcdn.com/ContentMediaGenericFiles/8c635fefd6fa1f723e5aada059898ae2-Full.webp" alt="Course 3 Image">
+                  <div class="card-section">
+                    <h3>
+                      ${course[ COURSE_NAME_INDEX ]}
+                    </h3>
+                    <p>
+                      ...
+                    </p>
+                    <a href="<?=getURL()?>/course/${i}" class="button expanded">Enter</a>
+                  </div>
+                </div>
+              </div>
+              `
+            )
+
+            i+=1
+          }
+        )
+      }
+
+    function deleteCourse(cid,rid){
+      //{token,rid,courseId}
+        const confirm = prompt("please type "+cid+" for confirm")
+        if(confirm == cid)
+        google.script.run.withSuccessHandler(
+        (res)=>{
+          $.toast({
+                  heading: res.status,
+                  text: res.mss,
+                  icon: res.status,
+                  position: 'top-center', 
+              })
+        }
+      ).deleteCourse({token:session.token,rid:rid,courseId:cid})
+    }
+
+      
+    </script>
+</body>
+
+</html>

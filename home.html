@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Learning - Home</title>
+    <!-- Foundation CSS -->
+    <?!=include("HCDN")?>
+
+    <style>
+        body {
+            font-family: 'Kanit', sans-serif;
+        }
+
+        .hero {
+            height: 70vh; /* Set the height as needed */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('hero-background.jpg') center/cover no-repeat; /* Replace 'hero-background.jpg' with your actual image URL */
+        }
+
+        .hero h1 {
+            font-size: 3em;
+            margin-bottom: 0.5em;
+        }
+
+        .hero p {
+            font-size: 1.2em;
+            margin-bottom: 1.5em;
+        }
+
+        .hero a.button {
+            font-size: 1.2em;
+        }
+
+        .feature {
+            padding: 3em 0;
+            background-color: #f8f9fa; /* Light gray background color */
+        }
+
+        .feature h2 {
+            text-align: center;
+        }
+
+        .feature .card {
+            margin-bottom: 1.5em;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <?!=include("navbar")?>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="grid-x align-center text-center">
+            <div class="cell small-12 medium-8">
+                <h1>Welcome to Online Learning Platform</h1>
+                <p>Explore a variety of courses and enhance your skills from the comfort of your home.</p>
+                <a href="<?=getURL()?>/login" class="button large">Login</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Feature Section -->
+    <section class="feature">
+        <div class="grid-container">
+            <h2>Web Features</h2>
+            <div class="grid-x grid-margin-x">
+                <!-- Feature 1 -->
+                <div class="cell small-12 medium-4">
+                    <div class="card">
+                        <div class="card-section">
+                            <h3>Feature 1</h3>
+                            <p>Short description of feature 1.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Feature 2 -->
+                <div class="cell small-12 medium-4">
+                    <div class="card">
+                        <div class="card-section">
+                            <h3>Feature 2</h3>
+                            <p>Short description of feature 2.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Feature 3 -->
+                <div class="cell small-12 medium-4">
+                    <div class="card">
+                        <div class="card-section">
+                            <h3>Feature 3</h3>
+                            <p>Short description of feature 3.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="grid-container">
+            <div class="grid-x align-center">
+                <div class="cell auto">
+                    <p>&copy; 2023 Online Learning Platform. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Foundation JS and dependencies -->
+    <script src="https://cdn.jsdelivr.net/foundation/6.3.1/js/vendor/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/foundation/6.3.1/js/vendor/what-input.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/foundation/6.3.1/js/foundation.min.js"></script>
+
+    <!-- Initialize Foundation -->
+    <script>
+        $(document).foundation();
+    </script>
+
+</body>
+</html>
