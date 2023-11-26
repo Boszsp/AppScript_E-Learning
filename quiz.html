@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <?!=include("HCDN")?>
+
+</head>
+
+<body class="bg-light" style="font-family: 'Kanit', sans-serif;">
+
+  <!-- Navbar -->
+  <?!=include("navbar")?>
+
+  <?let quiz=getQuiz({courseId:ID,quizRId:SUB_RID,quizzId:SUB_ID})?>
+  <!-- Content Menu -->
+  <div class="grid-x grid-padding-x align-center" id="app">
+    <div class="cell small-12 medium-6">
+      <h2><?=quiz[QUIZ_TITLE_INDEX]?></h2>
+      <form target="_blank" onsubmit="return submithandler(this);">
+        <div class="fb-render"></div>
+        <div><input type="submit" class="button primary"/></div>
+      </form>
+    </div>
+  </div>
+  <?!=include("isLogin")?>
+  
+  <script>
+    jQuery(function($) {
+    $('.fb-render').formRender({
+      formData: <?!=quiz[QUIZ_QUIZS_INDEX]?>
+    });
+  });
+  </script>
+  <script>
+    function submithandler(formList){
+      try{
+      formList = [...new FormData(formList)]
+      let holdForm = {}
+      formList.forEach(
+        (form)=>{
+          form[0] = form[0].replace("[]","")
+          if(!holdForm[form[0]]){
+          holdForm[form[0]] = []
+          }
+          holdForm[form[0]].push(form[1])
+        }
+      )
+      console.table(holdForm)
+      }catch(err){
+        console.error(err)
+      }
+      return false
+    }
+  </script>
+</body>
+
+</html>
