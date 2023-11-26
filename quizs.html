@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Course - Online Learning Platform</title>
+  <?!=include("HCDN")?>
+
+</head>
+
+<body class="bg-light" style="font-family: 'Kanit', sans-serif;">
+
+  <!-- Navbar -->
+  <?!=include("navbar")?>
+
+
+  <div class="grid-container">
+    <div class="grid-x grid-padding-x">
+
+      <div class="cell small-12 medium-2">
+        <div class="menu vertical">
+          <li><a><b>Menu</b></a></li>
+          <li><a href="<?=getURL()?>/course/<?=PEV_ID?>">Home</a></li>
+          <li><a href="<?=getURL()?>/course/<?=PEV_ID?>/lessons">Lesson</a></li>
+          <li><a href="<?=getURL()?>/course/<?=PEV_ID?>/quizs">Quizz</a></li>
+          <li><a href="<?=getURL()?>/course/<?=PEV_ID?>/problems">Problem</a></li>
+          <li><a href="<?=getURL()?>/course/<?=PEV_ID?>/students">Students</a></li>
+        </div>
+      </div>
+
+      <?const course = getCouse(PEV_ID)?>
+      <div class="cell small-12 medium-10">
+        <div class="cell small-12 grid-x ">
+          <h2 class="cell small-11">Course :
+            <?=course[COURSE_NAME_INDEX]?>
+          </h2>
+          <a href="<?=getURL()?>/cquiz?courseId=<?=course[COURSE_ID_INDEX]?>&redirect=<?=getURL()?>/course/<?=PEV_ID?>/quizs" class="cell small-1 button admin">Create Quiz</a>
+        </div>
+
+        <div>
+          <?let quizs = getAllQuizs(course[COURSE_ID_INDEX])?>
+          <table class="tables display">
+            <thead>
+              <tr>
+                <th>Quiz</th>
+                <th>Rank</th>
+                <th>Create</th>
+                <th>Expire</th>
+                <th>Status</th>
+                <th>View</th>
+              </tr>
+            </thead>
+            <tbody>
+              <?let i=2?>
+              <?for(let quiz of quizs){?>
+              <tr>
+                <td><?=quiz[QUIZ_TITLE_INDEX]?></td>
+                <td><?!="<span class='badge warning'>O</span>".repeat(quiz[QUIZ_RANK_INDEX]) + "<span class='badge secondary'>O</span>".repeat(5-quiz[QUIZ_RANK_INDEX])?></td>
+                <td><?=new Date(quiz[QUIZ_DATE_INDEX]).toLocaleString()?></td>
+                <td><?=new Date(quiz[QUIZ_EXPIRE_INDEX]).toLocaleString()?></td>
+                <td id="status-<?=quiz[QUIZ_ID_INDEX]?>">
+                  <?if(quiz[QUIZ_EXTERNAL_INDEX]!=""){?>
+                  <a class="badge secondary">E</a>
+                  <?}else{?>
+                  <a class="badge alert">U</a>
+                  <?}?>
+                </td>
+                <td><a href="<?=quiz[QUIZ_EXTERNAL_INDEX] != '' ? quiz[QUIZ_EXTERNAL_INDEX] : `${getURL()}/quiz?courseId=${course[COURSE_ID_INDEX]}&rid=${i}&id=${quiz[QUIZ_ID_INDEX]}` ?>">View</a></td>
+              </tr>
+              <?i++?>
+              <?}?>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      
+    </div>
+  </div>
+
+  <!-- dependencies -->
+  <?!=include("isLogin")?>
+  <script>
+
+  </script>
+
+
+</body>
+</html>
